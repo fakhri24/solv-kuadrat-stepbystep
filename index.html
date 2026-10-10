@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SuperMath: Step-by-Step Solver & Interactive Trainer Persamaan Kuadrat</title>
+  <meta name="description" content="Media pembelajaran interaktif matematika SMA Fase E: Solver 3 metode (Pemfaktoran, Melengkapkan Kuadrat Sempurna, Rumus ABC), Audio Narator Web Speech API, dan Kuis Interaktif 3 Level.">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            },
+            emerald: {
+              500: '#10b981',
+              600: '#059669',
+            },
+            amber: {
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX CDN for Math Notation -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    .heading-font {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    /* KaTeX rendering adjustments */
+    .katex-display {
+      margin: 0.65em 0 !important;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+    .step-card {
+      transition: all 0.2s ease-in-out;
+    }
+    .step-card:hover {
+      border-color: #818cf8;
+    }
+    /* Pulse equalizer animation for audio narration */
+    @keyframes soundwave {
+      0%, 100% { height: 6px; }
+      50% { height: 22px; }
+    }
+    .animate-bar-1 { animation: soundwave 1s infinite ease-in-out; }
+    .animate-bar-2 { animation: soundwave 1.2s infinite ease-in-out 0.2s; }
+    .animate-bar-3 { animation: soundwave 0.8s infinite ease-in-out 0.4s; }
+    .animate-bar-4 { animation: soundwave 1.1s infinite ease-in-out 0.1s; }
+
+    /* Shake animation on wrong answer */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .animate-shake {
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/25">
+          <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="heading-font text-lg font-bold tracking-tight text-white">SuperMath</span>
+            <span class="px-2 py-0.5 text-[10px] font-semibold bg-brand-500/20 text-brand-300 border border-brand-500/30 rounded-full">Aljabar SMA Fase E</span>
+          </div>
+          <p class="text-xs text-slate-400">Step-by-Step Solver & Interactive Trainer</p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs (Solver vs Trainer) -->
+      <nav class="flex items-center p-1 bg-slate-800/80 rounded-xl border border-slate-700/60">
+        <button id="nav-solver-btn" onclick="switchAppMode('solver')" class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 bg-brand-600 text-white shadow-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+          <span>Step Solver (3 Metode)</span>
+        </button>
+        <button id="nav-trainer-btn" onclick="switchAppMode('trainer')" class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-slate-200 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>Trainer & Kuis Mandiri</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ========================================== -->
+    <!-- SECTION 1: STEP-BY-STEP SOLVER MODE       -->
+    <!-- ========================================== -->
+    <div id="section-solver" class="space-y-6">
+
+      <!-- Hero / Input Panel Card -->
+      <div class="bg-slate-800/60 rounded-2xl border border-slate-700/70 p-5 sm:p-6 shadow-xl backdrop-blur-sm">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <!-- Left: Formula & Live Preview -->
+          <div class="flex-1">
+            <div class="flex items-center gap-2 text-xs font-semibold text-brand-400 uppercase tracking-wider mb-1">
+              <span>Bentuk Umum Persamaan Kuadrat</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-4">
+              <div id="math-preview-general" class="text-2xl sm:text-3xl font-semibold text-white">
+                <!-- Rendered by KaTeX: ax^2 + bx + c = 0 -->
+              </div>
+              <div class="h-6 w-[1px] bg-slate-700 hidden sm:block"></div>
+              <div class="text-xs text-slate-400">
+                dengan syarat mutlak <span id="math-cond-a" class="font-mono text-slate-300"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Preset Buttons -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs text-slate-400 font-medium">Contoh Kasus:</span>
+            <button onclick="applyPreset(1, -5, 6)" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600/50 transition">
+              Akar Bulat (a=1)
+            </button>
+            <button onclick="applyPreset(2, 5, -12)" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600/50 transition">
+              Pecahan (a=2)
+            </button>
+            <button onclick="applyPreset(1, -6, 9)" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600/50 transition">
+              Akar Kembar (D=0)
+            </button>
+            <button onclick="applyPreset(1, -4, 1)" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600/50 transition">
+              Irasional
+            </button>
+            <button onclick="applyPreset(1, -2, 5)" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600/50 transition">
+              Imajiner (D&lt;0)
+            </button>
+          </div>
+        </div>
+
+        <hr class="my-5 border-slate-700/50">
+
+        <!-- Form Input Koefisien a, b, c -->
+        <form id="solver-form" onsubmit="event.preventDefault(); solveCurrentEquation();" class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
+          <!-- Koefisien a -->
+          <div class="sm:col-span-3">
+            <label for="input-a" class="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
+              <span>Koefisien <span class="font-mono text-brand-400">a</span> (x²)</span>
+              <span class="text-[11px] text-amber-400 font-mono">a ≠ 0</span>
+            </label>
+            <div class="relative rounded-xl shadow-sm">
+              <input type="number" id="input-a" value="1" step="any" required
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-mono text-base focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition placeholder-slate-500">
+            </div>
+          </div>
+
+          <!-- Koefisien b -->
+          <div class="sm:col-span-3">
+            <label for="input-b" class="block text-xs font-semibold text-slate-300 mb-1.5">
+              Koefisien <span class="font-mono text-brand-400">b</span> (x)
+            </label>
+            <div class="relative rounded-xl shadow-sm">
+              <input type="number" id="input-b" value="-5" step="any" required
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-mono text-base focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition placeholder-slate-500">
+            </div>
+          </div>
+
+          <!-- Konstanta c -->
+          <div class="sm:col-span-3">
+            <label for="input-c" class="block text-xs font-semibold text-slate-300 mb-1.5">
+              Konstanta <span class="font-mono text-brand-400">c</span>
+            </label>
+            <div class="relative rounded-xl shadow-sm">
+              <input type="number" id="input-c" value="6" step="any" required
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-mono text-base focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition placeholder-slate-500">
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="sm:col-span-3 flex gap-2">
+            <button type="submit" class="flex-1 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg shadow-brand-600/30 transition flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+              <span>Selesaikan</span>
+            </button>
+            <button type="button" onclick="randomizeSolverEquation()" title="Acak Soal Baru" class="p-2.5 bg-slate-700/60 hover:bg-slate-700 text-slate-200 rounded-xl border border-slate-600 transition flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Ringkasan Hasil Cepat (Executive Math Summary) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Diskriminan Card -->
+        <div class="bg-slate-800/40 rounded-xl border border-slate-700/60 p-4 flex items-center gap-4">
+          <div id="disc-icon-badge" class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-lg border border-indigo-500/20">
+            D
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Nilai Diskriminan</div>
+            <div id="summary-discriminant" class="text-lg font-bold text-white font-mono mt-0.5">D = 1</div>
+            <div id="summary-disc-status" class="text-xs text-emerald-400 font-medium">D &gt; 0 (Dua akar real berlainan)</div>
+          </div>
+        </div>
+
+        <!-- Akar x1 -->
+        <div class="bg-slate-800/40 rounded-xl border border-slate-700/60 p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center font-bold text-lg border border-brand-500/20 font-mono">
+            x₁
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Akar Pertama (x₁)</div>
+            <div id="summary-root-1" class="text-lg font-bold text-white font-mono mt-0.5">x₁ = 3</div>
+            <div id="summary-root-1-desc" class="text-xs text-slate-400 font-medium">Bilangan bulat rasional</div>
+          </div>
+        </div>
+
+        <!-- Akar x2 -->
+        <div class="bg-slate-800/40 rounded-xl border border-slate-700/60 p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-500/20 font-mono">
+            x₂
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Akar Kedua (x₂)</div>
+            <div id="summary-root-2" class="text-lg font-bold text-white font-mono mt-0.5">x₂ = 2</div>
+            <div id="summary-root-2-desc" class="text-xs text-slate-400 font-medium">Bilangan bulat rasional</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Navigation Tabs for Methods -->
+      <div class="bg-slate-800/50 rounded-2xl border border-slate-700/70 overflow-hidden shadow-xl">
+        <!-- Tab Headers -->
+        <div class="flex border-b border-slate-700/70 bg-slate-800/80 p-1.5 gap-1.5 flex-wrap">
+          <button id="tab-btn-method1" onclick="switchMethodTab(1)" class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 bg-brand-600 text-white shadow-md flex items-center justify-center gap-2">
+            <span class="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center text-xs">1</span>
+            <span>Pemfaktoran Aljabar</span>
+          </button>
+          <button id="tab-btn-method2" onclick="switchMethodTab(2)" class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 flex items-center justify-center gap-2">
+            <span class="w-6 h-6 rounded-lg bg-slate-700 flex items-center justify-center text-xs">2</span>
+            <span>Melengkapkan Kuadrat Sempurna</span>
+          </button>
+          <button id="tab-btn-method3" onclick="switchMethodTab(3)" class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 flex items-center justify-center gap-2">
+            <span class="w-6 h-6 rounded-lg bg-slate-700 flex items-center justify-center text-xs">3</span>
+            <span>Rumus Kuadratik / ABC</span>
+          </button>
+        </div>
+
+        <!-- Speech Narration Control Bar -->
+        <div class="px-5 py-3 bg-slate-900/60 border-b border-slate-700/50 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <button id="btn-audio-narrator" onclick="toggleSpeechNarration()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-2.5 shadow-md shadow-emerald-600/20 transition">
+              <svg id="icon-speaker" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+              </svg>
+              <span id="label-speaker">Dengarkan Penjelasan Langkah (Audio)</span>
+            </button>
+
+            <!-- Soundwave equalizer animation -->
+            <div id="soundwave-indicator" class="hidden items-end gap-1 h-5 px-2">
+              <span class="w-1 bg-emerald-400 rounded-full animate-bar-1"></span>
+              <span class="w-1 bg-emerald-400 rounded-full animate-bar-2"></span>
+              <span class="w-1 bg-emerald-400 rounded-full animate-bar-3"></span>
+              <span class="w-1 bg-emerald-400 rounded-full animate-bar-4"></span>
+            </div>
+          </div>
+
+          <div class="text-xs text-slate-400 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+            <span>Web Speech API Narator Edukatif Bahasa Indonesia</span>
+          </div>
+        </div>
+
+        <!-- Tab Content Areas -->
+        <div class="p-6">
+
+          <!-- TAB 1 CONTENT: PEMFAKTORAN -->
+          <div id="content-method1" class="space-y-6">
+            <!-- Will be dynamically populated by renderMethod1() -->
+          </div>
+
+          <!-- TAB 2 CONTENT: MELENGKAPKAN KUADRAT SEMPURNA -->
+          <div id="content-method2" class="space-y-6 hidden">
+            <!-- Will be dynamically populated by renderMethod2() -->
+          </div>
+
+          <!-- TAB 3 CONTENT: RUMUS ABC -->
+          <div id="content-method3" class="space-y-6 hidden">
+            <!-- Will be dynamically populated by renderMethod3() -->
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SECTION 2: INTERACTIVE TRAINER MODE       -->
+    <!-- ========================================== -->
+    <div id="section-trainer" class="space-y-6 hidden">
+
+      <!-- Trainer Header & Stats Bar -->
+      <div class="bg-slate-800/60 rounded-2xl border border-slate-700/70 p-5 sm:p-6 shadow-xl backdrop-blur-sm">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Mode Kuis Mandiri</span>
+              <span class="text-xs text-slate-400 font-mono">Evaluasi Formatif Matematika</span>
+            </div>
+            <h2 class="heading-font text-xl font-bold text-white mt-1">Uji Pemahaman & Kecepatan Aljabar</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Selesaikan soal bertingkat dan dapatkan pembahasan runtut otomatis.</p>
+          </div>
+
+          <!-- Live Score Badges -->
+          <div class="flex items-center gap-3">
+            <!-- Streak -->
+            <div class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 flex items-center gap-2">
+              <span class="text-base">🔥</span>
+              <div>
+                <div class="text-[10px] text-slate-400 uppercase font-semibold leading-none">Streak</div>
+                <div id="trainer-streak" class="text-sm font-bold text-amber-400 font-mono">0</div>
+              </div>
+            </div>
+            <!-- Score -->
+            <div class="px-3.5 py-2 rounded-xl bg-brand-950/60 border border-brand-700/50 flex items-center gap-2">
+              <span class="text-base">⭐</span>
+              <div>
+                <div class="text-[10px] text-brand-300 uppercase font-semibold leading-none">Total Skor</div>
+                <div id="trainer-score" class="text-sm font-bold text-white font-mono">0</div>
+              </div>
+            </div>
+            <!-- Accuracy -->
+            <div class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 flex items-center gap-2">
+              <span class="text-base">🎯</span>
+              <div>
+                <div class="text-[10px] text-slate-400 uppercase font-semibold leading-none">Akurasi</div>
+                <div id="trainer-accuracy" class="text-sm font-bold text-emerald-400 font-mono">0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-5 border-slate-700/50">
+
+        <!-- Level Selector Pills -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-semibold text-slate-300 mr-1">Pilih Level:</span>
+            <button id="btn-lvl-1" onclick="setQuizLevel(1)" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition bg-brand-600 text-white shadow-sm flex items-center gap-1.5">
+              <span>Level 1</span>
+              <span class="text-[10px] opacity-80">(Faktorisasi Mudah, a=1)</span>
+            </button>
+            <button id="btn-lvl-2" onclick="setQuizLevel(2)" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 flex items-center gap-1.5">
+              <span>Level 2</span>
+              <span class="text-[10px] opacity-80">(a &gt; 1 / Pecahan)</span>
+            </button>
+            <button id="btn-lvl-3" onclick="setQuizLevel(3)" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 flex items-center gap-1.5">
+              <span>Level 3</span>
+              <span class="text-[10px] opacity-80">(Diskriminan & Teorema Vieta)</span>
+            </button>
+          </div>
+
+          <button onclick="generateNextQuizQuestion()" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200 transition flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            <span>Soal Baru / Lewati</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Quiz Card Container -->
+      <div id="trainer-card-box" class="bg-slate-800/50 rounded-2xl border border-slate-700/70 p-6 sm:p-8 shadow-xl transition-all">
+        <!-- Rendered by renderQuizCard() -->
+      </div>
+
+      <!-- Quiz History Table Log -->
+      <div class="bg-slate-800/40 rounded-2xl border border-slate-700/60 p-5 shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Riwayat Pengerjaan Sesi Ini</h3>
+            <span id="history-count-badge" class="px-2 py-0.5 text-[11px] font-semibold bg-slate-700 text-slate-300 rounded-full">0 Soal</span>
+          </div>
+          <button onclick="clearQuizHistory()" class="text-xs text-slate-400 hover:text-rose-400 transition">Reset Riwayat</button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="text-[11px] text-slate-400 uppercase bg-slate-800/80 border-b border-slate-700">
+              <tr>
+                <th scope="col" class="px-3 py-2.5">No</th>
+                <th scope="col" class="px-3 py-2.5">Level</th>
+                <th scope="col" class="px-3 py-2.5">Persamaan / Pertanyaan</th>
+                <th scope="col" class="px-3 py-2.5">Jawaban Kamu</th>
+                <th scope="col" class="px-3 py-2.5">Kunci Jawaban</th>
+                <th scope="col" class="px-3 py-2.5 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="quiz-history-body" class="divide-y divide-slate-800">
+              <tr id="quiz-history-empty">
+                <td colspan="6" class="px-3 py-6 text-center text-slate-500 italic">
+                  Belum ada soal yang dijawab pada sesi ini. Ayo mulai berlatih!
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Educational Footer -->
+  <footer class="mt-auto border-t border-slate-800 bg-slate-900/80 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p>SuperMath Media Pembelajaran Persamaan Kuadrat SMA Fase E &bull; Kurikulum Merdeka</p>
+      <p class="font-mono text-slate-400">Didukung KaTeX, Web Speech API & Tailwind CSS</p>
+    </div>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT APPLICATION CORE LOGIC          -->
+  <!-- ========================================== -->
+  <script>
+    /* --- APPLICATION STATE --- */
+    const state = {
+      mode: 'solver', // 'solver' or 'trainer'
+      currentMethodTab: 1, // 1, 2, 3
+      solverCoeffs: { a: 1, b: -5, c: 6 },
+      narrator: {
+        isSpeaking: false,
+        synth: window.speechSynthesis || null,
+        currentUtterance: null
+      },
+      quiz: {
+        level: 1,
+        currentQuestion: null,
+        score: 0,
+        streak: 0,
+        totalAttempted: 0,
+        totalCorrect: 0,
+        history: []
+      }
+    };
+
+    /* --- MATH HELPER UTILITIES --- */
+    function gcd(a, b) {
+      a = Math.abs(Math.round(a));
+      b = Math.abs(Math.round(b));
+      while (b) {
+        const t = b;
+        b = a % b;
+        a = t;
+      }
+      return a || 1;
+    }
+
+    function simplifyFraction(num, den) {
+      if (den === 0) return { num: 0, den: 1, val: 0, isInteger: true, latex: '0', text: '0', speech: '0' };
+      const sgn = (num * den < 0) ? -1 : 1;
+      let n = Math.abs(Math.round(num));
+      let d = Math.abs(Math.round(den));
+      const g = gcd(n, d);
+      n = (sgn * n) / g;
+      d = d / g;
+
+      const isInteger = (d === 1);
+      const val = n / d;
+      let latex = '';
+      let text = '';
+      let speech = '';
+
+      if (isInteger) {
+        latex = `${n}`;
+        text = `${n}`;
+        speech = `${n}`;
+      } else {
+        if (n < 0) {
+          latex = `-\\frac{${Math.abs(n)}}{${d}}`;
+          text = `-${Math.abs(n)}/${d}`;
+          speech = `minus ${Math.abs(n)} per ${d}`;
+        } else {
+          latex = `\\frac{${n}}{${d}}`;
+          text = `${n}/${d}`;
+          speech = `${n} per ${d}`;
+        }
+      }
+
+      return { num: n, den: d, val, isInteger, latex, text, speech };
+    }
+
+    // Simplifies sqrt(n) for n >= 0
+    function simplifyRadical(n) {
+      n = Math.round(n);
+      if (n <= 0) return { outside: 0, inside: 0, isSquare: true, latex: '0', text: '0', speech: '0' };
+      let outside = 1;
+      let inside = n;
+      for (let i = 2; i * i <= inside; i++) {
+        while (inside % (i * i) === 0) {
+          outside *= i;
+          inside /= (i * i);
+        }
+      }
+      const isSquare = (inside === 1);
+      let latex = '';
+      let text = '';
+      let speech = '';
+
+      if (isSquare) {
+        latex = `${outside}`;
+        text = `${outside}`;
+        speech = `${outside}`;
+      } else if (outside === 1) {
+        latex = `\\sqrt{${inside}}`;
+        text = `akar(${inside})`;
+        speech = `akar ${inside}`;
+      } else {
+        latex = `${outside}\\sqrt{${inside}}`;
+        text = `${outside}akar(${inside})`;
+        speech = `${outside} akar ${inside}`;
+      }
+
+      return { outside, inside, isSquare, latex, text, speech };
+    }
+
+    // Format polynomial term string in LaTeX
+    function formatQuadraticLatex(a, b, c) {
+      let parts = [];
+      // x^2 term
+      if (a === 1) parts.push('x^2');
+      else if (a === -1) parts.push('-x^2');
+      else parts.push(`${a}x^2`);
+
+      // x term
+      if (b === 1) parts.push('+ x');
+      else if (b === -1) parts.push('- x');
+      else if (b > 0) parts.push(`+ ${b}x`);
+      else if (b < 0) parts.push(`- ${Math.abs(b)}x`);
+
+      // constant term
+      if (c > 0) parts.push(`+ ${c}`);
+      else if (c < 0) parts.push(`- ${Math.abs(c)}`);
+
+      return parts.join(' ') + ' = 0';
+    }
+
+    // Spoken version for Web Speech API
+    function formatQuadraticSpeech(a, b, c) {
+      let s = '';
+      if (a === 1) s += 'x kuadrat';
+      else if (a === -1) s += 'minus x kuadrat';
+      else s += `${a} x kuadrat`;
+
+      if (b === 1) s += ' ditambah x';
+      else if (b === -1) s += ' dikurang x';
+      else if (b > 0) s += ` ditambah ${b} x`;
+      else if (b < 0) s += ` dikurang ${Math.abs(b)} x`;
+
+      if (c > 0) s += ` ditambah ${c}`;
+      else if (c < 0) s += ` dikurang ${Math.abs(c)}`;
+
+      s += ' sama dengan nol';
+      return s;
+    }
+
+    // KaTeX safe renderer
+    function renderLatex(latexString, displayMode = false) {
+      try {
+        if (typeof katex !== 'undefined') {
+          return katex.renderToString(latexString, {
+            throwOnError: false,
+            displayMode: displayMode
+          });
+        }
+      } catch (e) {
+        console.error('KaTeX render error:', e);
+      }
+      return `<span class="font-mono">${latexString}</span>`;
+    }
+
+    // Parse user input (e.g. "3", "-2/3", "1.5")
+    function parseUserMathInput(valStr) {
+      if (!valStr) return null;
+      valStr = valStr.trim().replace(',', '.');
+      if (valStr.includes('/')) {
+        const parts = valStr.split('/');
+        if (parts.length === 2) {
+          const num = parseFloat(parts[0]);
+          const den = parseFloat(parts[1]);
+          if (!isNaN(num) && !isNaN(den) && den !== 0) {
+            return num / den;
+          }
+        }
+      }
+      const num = parseFloat(valStr);
+      return isNaN(num) ? null : num;
+    }
+
+    /* --- AUDIO SYNTHESIS ENGINE (WEB SPEECH API) --- */
+    function toggleSpeechNarration() {
+      if (!state.narrator.synth) {
+        alert('Fitur Web Speech API tidak didukung oleh browser Anda.');
+        return;
+      }
+
+      if (state.narrator.isSpeaking) {
+        stopSpeechNarration();
+      } else {
+        startSpeechNarration();
+      }
+    }
+
+    function stopSpeechNarration() {
+      if (state.narrator.synth) {
+        state.narrator.synth.cancel();
+      }
+      state.narrator.isSpeaking = false;
+      updateNarratorUI(false);
+    }
+
+    function startSpeechNarration() {
+      stopSpeechNarration();
+
+      const { a, b, c } = state.solverCoeffs;
+      const speechText = generateNarrationScript(state.currentMethodTab, a, b, c);
+
+      const utterance = new SpeechSynthesisUtterance(speechText);
+      utterance.lang = 'id-ID';
+      utterance.rate = 0.98; // Natural teaching pace
+      utterance.pitch = 1.0;
+
+      // Select Indonesian voice if present
+      const voices = state.narrator.synth.getVoices();
+      const idVoice = voices.find(v => v.lang.startsWith('id') || v.lang.includes('ID'));
+      if (idVoice) utterance.voice = idVoice;
+
+      utterance.onstart = () => {
+        state.narrator.isSpeaking = true;
+        updateNarratorUI(true);
+      };
+
+      utterance.onend = () => {
+        state.narrator.isSpeaking = false;
+        updateNarratorUI(false);
+      };
+
+      utterance.onerror = () => {
+        state.narrator.isSpeaking = false;
+        updateNarratorUI(false);
+      };
+
+      state.narrator.currentUtterance = utterance;
+      state.narrator.synth.speak(utterance);
+    }
+
+    function updateNarratorUI(isPlaying) {
+      const btn = document.getElementById('btn-audio-narrator');
+      const label = document.getElementById('label-speaker');
+      const wave = document.getElementById('soundwave-indicator');
+
+      if (isPlaying) {
+        btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
+        btn.classList.add('bg-rose-600', 'hover:bg-rose-500');
+        label.textContent = 'Hentikan Narasi Audio';
+        wave.classList.remove('hidden');
+        wave.classList.add('flex');
+      } else {
+        btn.classList.remove('bg-rose-600', 'hover:bg-rose-500');
+        btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+        label.textContent = 'Dengarkan Penjelasan Langkah (Audio)';
+        wave.classList.add('hidden');
+        wave.classList.remove('flex');
+      }
+    }
+
+    function generateNarrationScript(methodTab, a, b, c) {
+      const eqSpoken = formatQuadraticSpeech(a, b, c);
+      const D = (b * b) - (4 * a * c);
+
+      if (methodTab === 1) {
+        // Pemfaktoran
+        let text = `Penjelasan metode pemfaktoran aljabar untuk persamaan ${eqSpoken}. `;
+        const P = a * c;
+        const S = b;
+        text += `Langkah pertama, kita mencari dua bilangan p dan q, sehingga p dikali q sama dengan a kali c yaitu ${P}, dan p ditambah q sama dengan b yaitu ${S}. `;
+
+        if (D >= 0 && Math.round(Math.sqrt(D)) ** 2 === D) {
+          const k = Math.round(Math.sqrt(D));
+          const p = (b + k) / 2;
+          const q = (b - k) / 2;
+          text += `Pasangan bilangan bulat yang memenuhi adalah p sama dengan ${p} dan q sama dengan ${q}. `;
+          if (a === 1) {
+            text += `Karena nilai a sama dengan satu, bentuk faktornya langsung menjadi kurung buka x ditambah ${p} kurung tutup, dikali kurung buka x ditambah ${q} kurung tutup sama dengan nol. `;
+          } else {
+            text += `Karena nilai a sama dengan ${a}, bentuk faktor ditulis dalam bentuk kurung buka ${a} x ditambah ${p} kurung tutup dikali kurung buka ${a} x ditambah ${q} kurung tutup, lalu disederhanakan dengan membagi ${a}. `;
+          }
+          const frac1 = simplifyFraction(-p, a);
+          const frac2 = simplifyFraction(-q, a);
+          text += `Dengan menyamakan masing-masing faktor ke nol, kita peroleh akar pertama x satu sama dengan ${frac1.speech}, dan akar kedua x dua sama dengan ${frac2.speech}. Selesai.`;
+        } else {
+          text += `Perhatikan bahwa nilai diskriminan D adalah ${D}, yang bukan merupakan bilangan kuadrat sempurna. Oleh karena itu, persamaan ini tidak dapat difaktorkan menggunakan pasangan bilangan bulat. Sangat disarankan beralih ke metode melengkapkan kuadrat sempurna atau rumus ABC.`;
+        }
+        return text;
+      } else if (methodTab === 2) {
+        // Melengkapkan Kuadrat Sempurna
+        let text = `Penjelasan metode melengkapkan kuadrat sempurna untuk persamaan ${eqSpoken}. `;
+        if (a !== 1) {
+          text += `Langkah pertama, bagi kedua ruas dengan ${a} agar koefisien x kuadrat bernilai satu. `;
+        }
+        text += `Langkah kedua, pindahkan konstanta c ke ruas kanan. `;
+        const halfB = simplifyFraction(b, 2 * a);
+        text += `Langkah ketiga, cari setengah dari koefisien x, yaitu ${halfB.speech}, lalu kuadratkan, dan tambahkan nilai kuadrat tersebut pada kedua ruas. `;
+        text += `Langkah keempat, ubah ruas kiri menjadi bentuk kuadrat sempurna, yaitu kurung buka x ditambah ${halfB.speech} kuadrat. `;
+        text += `Langkah kelima, tarik akar kuadrat pada kedua ruas dengan menambahkan tanda plus minus di ruas kanan. `;
+        if (D > 0) {
+          text += `Karena diskriminan positif, kita peroleh dua akar real yang berbeda.`;
+        } else if (D === 0) {
+          text += `Karena diskriminan sama dengan nol, kita peroleh akar kembar yaitu x sama dengan minus ${halfB.speech}.`;
+        } else {
+          text += `Karena diskriminan negatif yaitu ${D}, kita peroleh akar-akar imajiner atau bilangan kompleks.`;
+        }
+        return text;
+      } else {
+        // Rumus ABC
+        let text = `Penjelasan metode rumus kuadratik atau rumus ABC untuk persamaan ${eqSpoken}. `;
+        text += `Identifikasi koefisien terlebih dahulu: a sama dengan ${a}, b sama dengan ${b}, dan c sama dengan ${c}. `;
+        text += `Gunakan rumus kuadratik: x sama dengan minus b, plus minus akar b kuadrat dikurang empat a c, per dua a. `;
+        text += `Hitung diskriminan b kuadrat dikurang empat a c, sehingga diperoleh nilai D sama dengan ${D}. `;
+        if (D > 0) {
+          text += `Karena D lebih besar dari nol, terdapat dua akar real berbeda. `;
+          if (Math.round(Math.sqrt(D)) ** 2 === D) {
+            const k = Math.round(Math.sqrt(D));
+            const x1 = simplifyFraction(-b + k, 2 * a);
+            const x2 = simplifyFraction(-b - k, 2 * a);
+            text += `Akar dari ${D} adalah bilangan bulat ${k}. Maka x satu sama dengan ${x1.speech}, dan x dua sama dengan ${x2.speech}.`;
+          } else {
+            text += `Karena D bukan kuadrat sempurna, akar-akar dinyatakan dalam bentuk radikal atau desimal.`;
+          }
+        } else if (D === 0) {
+          const x = simplifyFraction(-b, 2 * a);
+          text += `Karena diskriminan sama dengan nol, rumus menghasilkan satu akar kembar, yaitu x sama dengan ${x.speech}.`;
+        } else {
+          text += `Karena diskriminan bernilai negatif ${D}, maka akar dari bilangan negatif menghasilkan bilangan imajiner i. Persamaan ini memiliki dua akar kompleks konjugat.`;
+        }
+        return text;
+      }
+    }
+
+    /* --- SOLVER CALCULATION & RENDERING --- */
+    function solveCurrentEquation() {
+      const a = parseFloat(document.getElementById('input-a').value);
+      const b = parseFloat(document.getElementById('input-b').value);
+      const c = parseFloat(document.getElementById('input-c').value);
+
+      if (isNaN(a) || isNaN(b) || isNaN(c)) {
+        alert('Mohon masukkan nilai koefisien a, b, dan c yang valid.');
+        return;
+      }
+
+      if (a === 0) {
+        alert('Nilai a tidak boleh 0 pada persamaan kuadrat! (Jika a = 0, ini adalah persamaan linear bx + c = 0).');
+        document.getElementById('input-a').focus();
+        return;
+      }
+
+      state.solverCoeffs = { a, b, c };
+
+      // Update Live General Preview & Summary Cards
+      updateSolverSummaryCards(a, b, c);
+
+      // Render the currently active method
+      renderActiveMethodTab();
+
+      // If speech is playing, stop and restart with new equation
+      if (state.narrator.isSpeaking) {
+        stopSpeechNarration();
+      }
+    }
+
+    function updateSolverSummaryCards(a, b, c) {
+      // General Header LaTeX
+      const eqLatex = formatQuadraticLatex(a, b, c);
+      document.getElementById('math-preview-general').innerHTML = renderLatex(eqLatex);
+      document.getElementById('math-cond-a').innerHTML = renderLatex(`a = ${a} \\neq 0`);
+
+      const D = (b * b) - (4 * a * c);
+      const discEl = document.getElementById('summary-discriminant');
+      const discStatusEl = document.getElementById('summary-disc-status');
+      const discIcon = document.getElementById('disc-icon-badge');
+
+      discEl.innerHTML = renderLatex(`D = ${b}^2 - 4(${a})(${c}) = ${D}`);
+
+      const root1El = document.getElementById('summary-root-1');
+      const root1Desc = document.getElementById('summary-root-1-desc');
+      const root2El = document.getElementById('summary-root-2');
+      const root2Desc = document.getElementById('summary-root-2-desc');
+
+      if (D > 0) {
+        const isSquare = (Math.round(Math.sqrt(D)) ** 2 === D);
+        discStatusEl.textContent = isSquare
+          ? `D > 0 & Kuadrat Sempurna (2 Akar Real Rasional)`
+          : `D > 0 (2 Akar Real Irasional / Bentuk Akar)`;
+        discStatusEl.className = 'text-xs text-emerald-400 font-medium';
+        discIcon.className = 'w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-500/20';
+
+        if (isSquare) {
+          const k = Math.round(Math.sqrt(D));
+          const r1 = simplifyFraction(-b + k, 2 * a);
+          const r2 = simplifyFraction(-b - k, 2 * a);
+          root1El.innerHTML = renderLatex(`x_1 = ${r1.latex}`);
+          root1Desc.textContent = r1.isInteger ? 'Bilangan Bulat' : 'Pecahan Rasional';
+          root2El.innerHTML = renderLatex(`x_2 = ${r2.latex}`);
+          root2Desc.textContent = r2.isInteger ? 'Bilangan Bulat' : 'Pecahan Rasional';
+        } else {
+          const rad = simplifyRadical(D);
+          const g = gcd(gcd(Math.abs(b), rad.outside), Math.abs(2 * a));
+          const bRed = -b / g;
+          const outRed = rad.outside / g;
+          const denRed = (2 * a) / g;
+
+          let radPart = outRed === 1 ? `\\sqrt{${rad.inside}}` : `${outRed}\\sqrt{${rad.inside}}`;
+          let rootLatex = '';
+          if (denRed === 1) {
+            rootLatex = `${bRed} \\pm ${radPart}`;
+          } else {
+            rootLatex = `\\frac{${bRed} \\pm ${radPart}}{${denRed}}`;
+          }
+
+          const dec1 = ((-b + Math.sqrt(D)) / (2 * a)).toFixed(3);
+          const dec2 = ((-b - Math.sqrt(D)) / (2 * a)).toFixed(3);
+
+          root1El.innerHTML = renderLatex(`x_1 \\approx ${dec1}`);
+          root1Desc.textContent = `Eksak: ${renderLatex(`x_{1,2} = ${rootLatex}`)}`;
+          root2El.innerHTML = renderLatex(`x_2 \\approx ${dec2}`);
+          root2Desc.textContent = 'Bilangan Irasional Real';
+        }
+      } else if (D === 0) {
+        discStatusEl.textContent = 'D = 0 (Akar Real Kembar: x₁ = x₂)';
+        discStatusEl.className = 'text-xs text-amber-400 font-medium';
+        discIcon.className = 'w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-lg border border-amber-500/20';
+
+        const r = simplifyFraction(-b, 2 * a);
+        root1El.innerHTML = renderLatex(`x_1 = ${r.latex}`);
+        root1Desc.textContent = 'Akar Kembar Real';
+        root2El.innerHTML = renderLatex(`x_2 = ${r.latex}`);
+        root2Desc.textContent = 'Akar Kembar Real';
+      } else {
+        discStatusEl.textContent = 'D < 0 (Akar Kompleks / Imajiner)';
+        discStatusEl.className = 'text-xs text-rose-400 font-medium';
+        discIcon.className = 'w-12 h-12 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center font-bold text-lg border border-rose-500/20';
+
+        const absD = Math.abs(D);
+        const rad = simplifyRadical(absD);
+        const g = gcd(gcd(Math.abs(b), rad.outside), Math.abs(2 * a));
+        const bRed = -b / g;
+        const outRed = rad.outside / g;
+        const denRed = (2 * a) / g;
+
+        let imPart = outRed === 1 ? `i\\sqrt{${rad.inside}}` : `${outRed}i\\sqrt{${rad.inside}}`;
+        if (rad.isSquare) {
+          imPart = `${rad.outside / g}i`;
+        }
+
+        let expr = (denRed === 1) ? `${bRed} \\pm ${imPart}` : `\\frac{${bRed} \\pm ${imPart}}{${denRed}}`;
+        root1El.innerHTML = renderLatex(`x_{1,2} = ${expr}`);
+        root1Desc.textContent = 'Konjugat Imajiner';
+        root2El.innerHTML = renderLatex(`x \\notin \\mathbb{R}`);
+        root2Desc.textContent = 'Tidak Ada Akar Real';
+      }
+    }
+
+    function switchMethodTab(tabNum) {
+      state.currentMethodTab = tabNum;
+
+      // Update Tab Navigation Button styles
+      for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById(`tab-btn-method${i}`);
+        const content = document.getElementById(`content-method${i}`);
+        if (i === tabNum) {
+          btn.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 bg-brand-600 text-white shadow-md flex items-center justify-center gap-2';
+          btn.querySelector('span:first-child').className = 'w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center text-xs';
+          content.classList.remove('hidden');
+        } else {
+          btn.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 flex items-center justify-center gap-2';
+          btn.querySelector('span:first-child').className = 'w-6 h-6 rounded-lg bg-slate-700 flex items-center justify-center text-xs';
+          content.classList.add('hidden');
+        }
+      }
+
+      renderActiveMethodTab();
+
+      if (state.narrator.isSpeaking) {
+        stopSpeechNarration();
+      }
+    }
+
+    function renderActiveMethodTab() {
+      const { a, b, c } = state.solverCoeffs;
+      if (state.currentMethodTab === 1) {
+        renderMethod1(a, b, c);
+      } else if (state.currentMethodTab === 2) {
+        renderMethod2(a, b, c);
+      } else if (state.currentMethodTab === 3) {
+        renderMethod3(a, b, c);
+      }
+    }
+
+    /* --- METODE 1: PEMFAKTORAN ALJABAR --- */
+    function renderMethod1(a, b, c) {
+      const container = document.getElementById('content-method1');
+      const P = a * c;
+      const S = b;
+      const D = (b * b) - (4 * a * c);
+
+      // Cek apakah ada pasangan bilangan bulat p, q
+      const isSquare = (D >= 0 && Math.round(Math.sqrt(D)) ** 2 === D);
+
+      if (!isSquare) {
+        // Tampilkan Catatan Edukatif bila akar irasional / imajiner
+        container.innerHTML = `
+          <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6">
+            <div class="flex items-start gap-4">
+              <div class="p-3 bg-amber-500/20 text-amber-400 rounded-xl text-xl">
+                ⚠️
+              </div>
+              <div class="space-y-3">
+                <h3 class="text-base font-bold text-amber-300">Catatan Edukatif Pemfaktoran Aljabar</h3>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                  Pada persamaan <span class="text-white">${renderLatex(formatQuadraticLatex(a, b, c))}</span>, kita memperoleh nilai diskriminan:
+                </p>
+                <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-700/50 inline-block">
+                  ${renderLatex(`D = b^2 - 4ac = (${b})^2 - 4(${a})(${c}) = ${D}`)}
+                </div>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                  ${D < 0 
+                    ? `Karena <strong>D &lt; 0</strong>, persamaan ini <strong>tidak memiliki akar real</strong> (akar-akarnya berupa bilangan kompleks/imajiner). Tidak ada pasangan bilangan bulat real <span class="font-mono">p</span> dan <span class="font-mono">q</span> yang dapat memenuhi <span class="font-mono">p · q = ${P}</span> dan <span class="font-mono">p + q = ${S}</span>.`
+                    : `Karena nilai diskriminan <strong>D = ${D}</strong> <strong>bukan bilangan kuadrat sempurna</strong>, akar-akar persamaan ini merupakan <strong>bilangan irasional</strong> (mengandung bentuk akar radikal). Maka faktorisasi menggunakan pasangan bilangan bulat <span class="font-mono">p, q ∈ ℤ</span> <strong>tidak dapat dilakukan secara langsung</strong>.`
+                  }
+                </p>
+                <div class="pt-2 flex flex-wrap gap-3">
+                  <button onclick="switchMethodTab(3)" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-semibold shadow transition flex items-center gap-2">
+                    <span>Beralih ke Metode Rumus ABC (Rekomendasi)</span>
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                  </button>
+                  <button onclick="switchMethodTab(2)" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl text-xs font-semibold transition">
+                    Gunakan Melengkapkan Kuadrat
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Jika kuadrat sempurna, temukan pasangan bulat p dan q
+      const k = Math.round(Math.sqrt(D));
+      const p = (b + k) / 2;
+      const q = (b - k) / 2;
+
+      // Buat tabel eksplorasi faktor a*c
+      let factorRowsHtml = '';
+      const absP = Math.abs(P);
+      const checkedDivisors = new Set();
+
+      for (let i = 1; i <= Math.min(absP, 30); i++) {
+        if (absP % i === 0) {
+          const div1 = i;
+          const div2 = P / i;
+          // check positive and negative variations
+          const pairs = [
+            [div1, div2],
+            [-div1, -div2]
+          ];
+          for (let [candP, candQ] of pairs) {
+            const key = Math.min(candP, candQ) + ',' + Math.max(candP, candQ);
+            if (!checkedDivisors.has(key)) {
+              checkedDivisors.add(key);
+              const sum = candP + candQ;
+              const isMatch = (sum === S && (candP * candQ === P));
+              factorRowsHtml += `
+                <tr class="${isMatch ? 'bg-emerald-500/10 font-semibold text-emerald-300' : 'hover:bg-slate-800/40'}">
+                  <td class="px-3 py-1.5 font-mono">${candP}</td>
+                  <td class="px-3 py-1.5 font-mono">${candQ}</td>
+                  <td class="px-3 py-1.5 font-mono">${candP} × ${candQ} = ${P}</td>
+                  <td class="px-3 py-1.5 font-mono">${candP} + (${candQ}) = ${sum}</td>
+                  <td class="px-3 py-1.5 text-center">
+                    ${isMatch ? '<span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Cocok! ✔</span>' : '<span class="text-slate-600">✕</span>'}
+                  </td>
+                </tr>
+              `;
+            }
+          }
+        }
+      }
+
+      // Hitung faktorisasi akhir
+      const frac1 = simplifyFraction(-p, a);
+      const frac2 = simplifyFraction(-q, a);
+
+      // Bentuk (m x + p')(n x + q')
+      // Akar x1 = -p1/m1, x2 = -p2/m2
+      const m1 = frac1.den;
+      const p1 = -frac1.num;
+      const m2 = frac2.den;
+      const p2 = -frac2.num;
+
+      const pSign1 = p1 >= 0 ? `+ ${p1}` : `- ${Math.abs(p1)}`;
+      const pSign2 = p2 >= 0 ? `+ ${p2}` : `- ${Math.abs(p2)}`;
+
+      const factorBracket1 = m1 === 1 ? `(x ${pSign1})` : `(${m1}x ${pSign1})`;
+      const factorBracket2 = m2 === 1 ? `(x ${pSign2})` : `(${m2}x ${pSign2})`;
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <!-- Step 1: Identifikasi Target Faktor -->
+          <div class="step-card bg-slate-900/60 rounded-2xl border border-slate-800 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-lg bg-brand-500/20 text-brand-400 font-bold flex items-center justify-center text-xs">Langkah 1</span>
+              <h4 class="font-bold text-white text-sm">Menemukan Pasangan Faktor p dan q</h4>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mb-3">
+              Cari dua bilangan bulat <span class="font-mono text-brand-300">p</span> dan <span class="font-mono text-brand-300">q</span> sedemikian rupa sehingga:
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+              <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                <div class="text-[11px] text-slate-400">Hasil Kali:</div>
+                <div class="text-sm font-mono text-white mt-1">
+                  ${renderLatex(`p \\cdot q = a \\cdot c = (${a})(${c}) = ${P}`)}
+                </div>
+              </div>
+              <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                <div class="text-[11px] text-slate-400">Hasil Penjumlahan:</div>
+                <div class="text-sm font-mono text-white mt-1">
+                  ${renderLatex(`p + q = b = ${S}`)}
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabel Uji Faktor -->
+            <div class="rounded-xl border border-slate-800 overflow-hidden">
+              <div class="bg-slate-800/50 px-3 py-2 text-[11px] font-semibold text-slate-400 flex items-center justify-between">
+                <span>Tabel Uji Pasangan Faktor</span>
+                <span class="text-emerald-400 text-[10px]">Ditemukan: p = ${p}, q = ${q}</span>
+              </div>
+              <div class="max-h-48 overflow-y-auto">
+                <table class="w-full text-xs text-left text-slate-300">
+                  <thead class="bg-slate-800/90 text-slate-400 uppercase text-[10px] sticky top-0">
+                    <tr>
+                      <th class="px-3 py-1.5">p</th>
+                      <th class="px-3 py-1.5">q</th>
+                      <th class="px-3 py-1.5">p × q</th>
+                      <th class="px-3 py-1.5">p + q</th>
+                      <th class="px-3 py-1.5 text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800">
+                    ${factorRowsHtml}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Penulisan Bentuk Faktor -->
+          <div class="step-card bg-slate-900/60 rounded-2xl border border-slate-800 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-lg bg-brand-500/20 text-brand-400 font-bold flex items-center justify-center text-xs">Langkah 2</span>
+              <h4 class="font-bold text-white text-sm">Menyusun Bentuk Faktorisasi Aljabar</h4>
+            </div>
+            ${a === 1 ? `
+              <p class="text-xs text-slate-300 mb-2">Karena <span class="font-mono text-brand-300">a = 1</span>, bentuk faktor langsung ditulis:</p>
+              <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center">
+                ${renderLatex(`(x + p)(x + q) = 0`, true)}
+                <div class="mt-2 text-sm text-brand-300 font-mono">
+                  ${renderLatex(`(x ${p >= 0 ? `+ ${p}` : `- ${Math.abs(p)}`})(x ${q >= 0 ? `+ ${q}` : `- ${Math.abs(q)}`}) = 0`, true)}
+                </div>
+              </div>
+            ` : `
+              <p class="text-xs text-slate-300 mb-2">Gunakan rumus umum pemfaktoran untuk <span class="font-mono text-brand-300">a ≠ 1</span>:</p>
+              <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center space-y-2">
+                ${renderLatex(`\\frac{(ax + p)(ax + q)}{a} = 0`, true)}
+                <div class="text-sm text-slate-300 font-mono">
+                  ${renderLatex(`\\frac{(${a}x ${p >= 0 ? `+ ${p}` : `- ${Math.abs(p)}`})(${a}x ${q >= 0 ? `+ ${q}` : `- ${Math.abs(q)}`})}{${a}} = 0`, true)}
+                </div>
+                <div class="text-xs text-slate-400 pt-1">
+                  Sederhanakan dengan membagi faktor persekutuan terhadap penyebut <span class="font-mono">${a}</span>:
+                </div>
+                <div class="text-base text-brand-300 font-mono font-semibold">
+                  ${renderLatex(`${factorBracket1}${factorBracket2} = 0`, true)}
+                </div>
+              </div>
+            `}
+          </div>
+
+          <!-- Step 3: Menentukan Akar-Akar Persamaan -->
+          <div class="step-card bg-slate-900/60 rounded-2xl border border-slate-800 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-lg bg-brand-500/20 text-brand-400 font-bold flex items-center justify-center text-xs">Langkah 3</span>
+              <h4 class="font-bold text-white text-sm">Menentukan Nilai Akar-Akar (x₁ dan x₂)</h4>
+            </div>
+            <p class="text-xs text-slate-300 mb-3">
+              Berdasarkan sifat perkalian nol (<span class="font-mono">A · B = 0 ⟹ A = 0</span> atau <span class="font-mono">B = 0</span>):
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Kasus 1 -->
+              <div class="p-4 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                <div class="text-xs font-semibold text-brand-400 mb-1">Akar Pertama (x₁):</div>
+                <div class="space-y-1.5 font-mono text-xs text-slate-300">
+                  <div>${renderLatex(`${factorBracket1.replace(/[()]/g, '')} = 0`)}</div>
+                  ${m1 !== 1 ? `<div>${renderLatex(`${m1}x = ${-p1}`)}</div>` : ''}
+                  <div class="text-sm font-bold text-white pt-1">
+                    ${renderLatex(`x_1 = ${frac1.latex}`)}
+                  </div>
+                </div>
+              </div>
+              <!-- Kasus 2 -->
+              <div class="p-4 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                <div class="text-xs font-semibold text-emerald-400 mb-1">Akar Kedua (x₂):</div>
+                <div class="space-y-1.5 font-mono text-xs text-slate-300">
+                  <div>${renderLatex(`${factorBracket2.replace(/[()]/g, '')} = 0`)}</div>
+                  ${m2 !== 1 ? `<div>${renderLatex(`${m2}x = ${-p2}`)}</div>` : ''}
+                  <div class="text-sm font-bold text-white pt-1">
+                    ${renderLatex(`x_2 = ${frac2.latex}`)}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Himpunan Penyelesaian (HP) -->
+            <div class="mt-4 p-3 bg-brand-950/40 rounded-xl border border-brand-700/40 flex items-center justify-between">
+              <span class="text-xs font-semibold text-brand-300 uppercase tracking-wider">Himpunan Penyelesaian (HP):</span>
+              <span class="text-sm font-bold text-white font-mono">
+                ${renderLatex(`HP = \\left\\{ ${frac1.latex}, \\, ${frac2.latex} \\right\\}`)}
+              </span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- METODE 2: MELENGKAPKAN KUADRAT SEMPURNA --- */
+    function renderMethod2(a, b, c) {
+      const container = document.getElementById('content-method2');
+      const D = (b * b) - (4 * a * c);
+
+      // Langkah-langkah runtut matematis
+      const bOverA = simplifyFraction(b, a);
+      const cOverA = simplifyFraction(c, a);
+      const negCOverA = simplifyFraction(-c, a);
+
+      // Setengah dari koefisien x: b / (2a)
+      const halfB = simplifyFraction(b, 2 * a);
+      // Kuadrat dari b / (2a)
+      const halfBSquared = simplifyFraction(b * b, 4 * a * a);
+
+      // Ruas kanan: -c/a + (b/(2a))^2 = (b^2 - 4ac) / (4a^2) = D / (4a^2)
+      const rightSideFraction = simplifyFraction(D, 4 * a * a);
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <!-- Langkah 1: Bagi kedua ruas dengan a -->
+          <div class="step-card bg-slate-900/60 rounded-2xl border border-slate-800 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-xs">Langkah 1</span>
+              <h4 class="font-bold text-white text-sm">Pastikan Koefisien x² Bernilai 1</h4>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mb-3">
+              Persamaan awal: <span class="font-mono text-white">${renderLatex(formatQuadraticLatex(a, b, c))}</span>
+            </p>
+            ${a === 1 ? `
+              <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 text-xs text-emerald-400">
+                ✔ Koefisien <span class="font-mono">x²</span> sudah bernilai 1 (<span class="font-mono">a = 1</span>), sehingga langkah pembagian tidak diperlukan.
+              </div>
+            ` : `
+              <p class="text-xs text-slate-300 mb-2">Bagi seluruh suku di kedua ruas dengan <span class="font-mono text-brand-300">a = ${a}</span>:</p>
+              <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center">
+                ${renderLatex(`x^2 + \\left(\\frac{${b}}{${a}}\\right)x + \\left(\\frac{${c}}{${a}}\\right) = 0`, true)}
+                <div class="mt-2 text-sm text-brand-300 font-mono">
+                  ${renderLatex(`x^2 ${bOverA.num >= 0 ? `+ ${bOverA.latex}` : bOverA.latex}x ${cOverA.num >= 0 ? `+ ${cOverA.latex}` : cOverA.latex} = 0`, true)}
+                </div>
+              </div>
+            `}
+          </div>
+
+          <!-- Langkah 2: Pindahkan konstanta ke ruas kanan -->
+          <div class="step-card bg-slate-900/60 rounded-2xl border border-slate-800 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-xs">Langkah 2</span>
+              <h4 class="font-bold text-white text-sm">Pindahkan Konstanta ke Ruas Kanan</h4>
+            </div>
+            <p class="text-xs text-slate-300 mb-2">Pindahkan suku konstanta ke ruas kanan (mengubah tanda):</p>
+            <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center font-mono">
+              ${renderLatex(`x^2 ${bOverA.num >= 0 ? `+ ${bOverA.latex}` : bOverA.latex}x = ${negCOverA.latex}`, true)}
+            </div>
+          </div>
+
+          <!-- Langkah 3: Tambahkan (b/2a)^2 pada kedua ruas -->
+          <div class="step-card bg-slate-900/60 rounded-2xl border border-slate-800 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-xs">Langkah 3</span>
+              <h4 class="font-bold text-white text-sm">Tambahkan Kuadrat dari Setengah Koefisien x</h4>
+            </div>
+            <div class="space-y-3 text-xs text-slate-300">
+              <p>Hitung nilai penambah untuk melengkapkan kuadrat sempurna:</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                  <div class="text-slate-400 text-[11px]">Setengah Koefisien x:</div>
+                  <div class="text-sm font-mono text-white mt-1">
+                    ${renderLatex(`\\frac{1}{2} \\left(${bOverA.latex}\\right) = \\frac{${b}}{${2 * a}} = ${halfB.latex}`)}
+                  </div>
+                </div>
+                <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                  <div class="text-slate-400 text-[11px]">Kuadratnya:</div>
+                  <div class="text-sm font-mono text-white mt-1">
+                    ${renderLatex(`\\left(${halfB.latex}\\right)^2 = ${halfBSquared.latex}`)}
+                  </div>
+                </div>
+              </div>
+
+              <p class="pt-2">Tambahkan <span class="font-mono text-emerald-400">${renderLatex(halfBSquared.latex)}</span> ke kedua ruas persamaan:</p>
+              <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center font-mono space-y-2">
+                <div>
+                  ${renderLatex(`x^2 ${bOverA.num >= 0 ? `+ ${bOverA.latex}` : bOverA.latex}x + \\left(${halfB.latex}\\right)^2 = ${negCOverA.latex} + ${halfBSquared.latex}`, true)}
+                </div>
+                <div class="text-xs text-slate-400">
+                  Samakan penyebut di ruas kanan: <span class="font-mono text-white">${renderLatex(`\\frac{${-c * 4 * a} + ${b * b}}{${4 * a * a}} = \\frac{${D}}{${4 * a * a}} = ${rightSideFraction.latex}`)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Langkah 4: Bentuk Kuadrat Sempurna & Tarik Akar -->
+          <div class="step-card bg-slate-900/60 rounded-2xl border border-slate-800 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-xs">Langkah 4 & 5</span>
+              <h4 class="font-bold text-white text-sm">Faktorisasi Kuadrat Sempurna & Penarikan Akar</h4>
+            </div>
+            <p class="text-xs text-slate-300 mb-2">Faktorkan ruas kiri menjadi bentuk kuadrat sempurna:</p>
+            <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center font-mono space-y-3">
+              <div class="text-base text-brand-300 font-semibold">
+                ${renderLatex(`\\left(x ${halfB.num >= 0 ? `+ ${halfB.latex}` : halfB.latex}\\right)^2 = ${rightSideFraction.latex}`, true)}
+              </div>
+              <p class="text-xs text-slate-400">Tarik akar kuadrat pada kedua ruas:</p>
+              <div class="text-base text-white">
+                ${renderLatex(`x ${halfB.num >= 0 ? `+ ${halfB.latex}` : halfB.latex} = \\pm \\sqrt{${rightSideFraction.latex}}`, true)}
+              </div>
+            </div>
+          </div>
+
+          <!-- Langkah 6: Hasil Akhir Penyelesaian -->
+          <div class="step-card bg-slate-900/60 rounded-2xl border border-slate-800 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-xs">Langkah 6</span>
+              <h4 class="font-bold text-white text-sm">Penyelesaian Nilai x</h4>
+            </div>
+            <div class="space-y-3 text-xs text-slate-300">
+              <p>Pindahkan suku konstan ke ruas kanan untuk mengisolasi nilai <span class="font-mono">x</span>:</p>
+              <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center font-mono">
+                ${renderLatex(`x = -\\left(${halfB.latex}\\right) \\pm \\sqrt{${rightSideFraction.latex}}`, true)}
+              </div>
+
+              ${D > 0 ? `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
+                  ${Math.round(Math.sqrt(D)) ** 2 === D ? `
+                    <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                      <div class="text-brand-400 font-semibold mb-1">Akar x₁:</div>
+                      <div class="text-sm font-mono text-white">
+                        ${renderLatex(`x_1 = ${simplifyFraction(-b + Math.round(Math.sqrt(D)), 2 * a).latex}`)}
+                      </div>
+                    </div>
+                    <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                      <div class="text-emerald-400 font-semibold mb-1">Akar x₂:</div>
+                      <div class="text-sm font-mono text-white">
+                        ${renderLatex(`x_2 = ${simplifyFraction(-b - Math.round(Math.sqrt(D)), 2 * a).latex}`)}
+                      </div>
+                    </div>
+                  ` : `
+                    <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 col-span-2">
+                      <div class="text-brand-400 font-semibold mb-1">Bentuk Radikal Eksak:</div>
+                      <div class="text-sm font-mono text-white">
+                        ${renderLatex(`x = -\\left(${halfB.latex}\\right) \\pm \\frac{${simplifyRadical(D).latex}}{${2 * Math.abs(a)}}`)}
+                      </div>
+                    </div>
+                  `}
+                </div>
+              ` : D === 0 ? `
+                <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 text-center">
+                  <div class="text-amber-400 font-semibold mb-1">Akar Tunggal / Kembar:</div>
+                  <div class="text-base font-mono text-white font-bold">
+                    ${renderLatex(`x_1 = x_2 = ${simplifyFraction(-b, 2 * a).latex}`)}
+                  </div>
+                </div>
+              ` : `
+                <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 text-center">
+                  <div class="text-rose-400 font-semibold mb-1">Akar Imajiner / Kompleks:</div>
+                  <div class="text-sm font-mono text-white">
+                    ${renderLatex(`x = -\\left(${halfB.latex}\\right) \\pm \\frac{${simplifyRadical(Math.abs(D)).latex}i}{${2 * Math.abs(a)}}`)}
+                  </div>
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- METODE 3: RUMUS KUADRATIK / ABC --- */
+    function renderMethod3(a, b, c) {
+      const container = document.getElementById('content-method3');
+      const D = (b * b) - (4 * a * c);
+      const fourAC = 4 * a * c;
+      const bSquared = b * b;
+      const twoA = 2 * a;
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <!-- Langkah 1: Rumus Umum & Substitusi -->
+          <div class="step-card bg-slate-900/60 rounded-2xl border border-slate-800 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">Langkah 1</span>
+              <h4 class="font-bold text-white text-sm">Rumus Kuadratik dan Substitusi Koefisien</h4>
+            </div>
+            <div class="space-y-3 text-xs text-slate-300">
+              <p>Identifikasi nilai koefisien:</p>
+              <div class="flex flex-wrap gap-3 font-mono">
+                <span class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700">a = <strong class="text-brand-400">${a}</strong></span>
+                <span class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700">b = <strong class="text-brand-400">${b}</strong></span>
+                <span class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700">c = <strong class="text-brand-400">${c}</strong></span>
+              </div>
+              <p class="pt-2">Tuliskan rumus kuadratik (Rumus ABC):</p>
+              <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center font-mono">
+                ${renderLatex(`x_{1,2} = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}`, true)}
+              </div>
+              <p class="pt-1">Substitusi nilai koefisien <span class="font-mono">a, b, c</span> ke dalam rumus:</p>
+              <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center font-mono text-sm text-brand-300">
+                ${renderLatex(`x_{1,2} = \\frac{-(${b}) \\pm \\sqrt{(${b})^2 - 4(${a})(${c})}}{2(${a})}`, true)}
+              </div>
+            </div>
+          </div>
+
+          <!-- Langkah 2: Evaluasi Diskriminan (b^2 - 4ac) -->
+          <div class="step-card bg-slate-900/60 rounded-2xl border border-slate-800 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">Langkah 2</span>
+              <h4 class="font-bold text-white text-sm">Evaluasi Nilai Diskriminan (D)</h4>
+            </div>
+            <div class="space-y-3 text-xs text-slate-300">
+              <p>Hitung bagian di dalam tanda akar secara terpisah:</p>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono">
+                <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                  <div class="text-[11px] text-slate-400">b² :</div>
+                  <div class="text-sm text-white mt-1">(${b})² = ${bSquared}</div>
+                </div>
+                <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                  <div class="text-[11px] text-slate-400">4ac :</div>
+                  <div class="text-sm text-white mt-1">4(${a})(${c}) = ${fourAC}</div>
+                </div>
+                <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                  <div class="text-[11px] text-slate-400">D = b² - 4ac :</div>
+                  <div class="text-sm text-white mt-1">${bSquared} - (${fourAC}) = <strong>${D}</strong></div>
+                </div>
+              </div>
+
+              <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center font-mono">
+                ${renderLatex(`x_{1,2} = \\frac{${-b} \\pm \\sqrt{${D}}}{${twoA}}`, true)}
+              </div>
+            </div>
+          </div>
+
+          <!-- Langkah 3: Penyederhanaan Bentuk Akar dan Perhitungan Akhir -->
+          <div class="step-card bg-slate-900/60 rounded-2xl border border-slate-800 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">Langkah 3</span>
+              <h4 class="font-bold text-white text-sm">Penyederhanaan Radikal dan Hasil Akhir</h4>
+            </div>
+            ${D > 0 ? `
+              <div class="space-y-4 text-xs text-slate-300">
+                ${Math.round(Math.sqrt(D)) ** 2 === D ? `
+                  <p>Karena <span class="font-mono text-emerald-400">D = ${D}</span> adalah kuadrat sempurna, maka <span class="font-mono text-white">${renderLatex(`\\sqrt{${D}} = ${Math.round(Math.sqrt(D))}`)}</span>.</p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- x1 -->
+                    <div class="p-4 bg-slate-800/60 rounded-xl border border-slate-700/50 space-y-2">
+                      <div class="font-bold text-brand-400 text-sm">Akar x₁ (Tanda +):</div>
+                      <div class="font-mono text-xs">
+                        ${renderLatex(`x_1 = \\frac{${-b} + ${Math.round(Math.sqrt(D))}}{${twoA}} = \\frac{${-b + Math.round(Math.sqrt(D))}}{${twoA}}`, true)}
+                      </div>
+                      <div class="text-base font-bold text-white font-mono pt-1 text-center">
+                        ${renderLatex(`x_1 = ${simplifyFraction(-b + Math.round(Math.sqrt(D)), twoA).latex}`)}
+                      </div>
+                    </div>
+                    <!-- x2 -->
+                    <div class="p-4 bg-slate-800/60 rounded-xl border border-slate-700/50 space-y-2">
+                      <div class="font-bold text-emerald-400 text-sm">Akar x₂ (Tanda -):</div>
+                      <div class="font-mono text-xs">
+                        ${renderLatex(`x_2 = \\frac{${-b} - ${Math.round(Math.sqrt(D))}}{${twoA}} = \\frac{${-b - Math.round(Math.sqrt(D))}}{${twoA}}`, true)}
+                      </div>
+                      <div class="text-base font-bold text-white font-mono pt-1 text-center">
+                        ${renderLatex(`x_2 = ${simplifyFraction(-b - Math.round(Math.sqrt(D)), twoA).latex}`)}
+                      </div>
+                    </div>
+                  </div>
+                ` : `
+                  <p>Karena <span class="font-mono text-amber-400">D = ${D}</span> bukan kuadrat sempurna, sederhanakan bentuk radikal <span class="font-mono">${renderLatex(`\\sqrt{${D}} = ${simplifyRadical(D).latex}`)}</span>:</p>
+                  <div class="p-4 bg-slate-800/60 rounded-xl border border-slate-700/50 space-y-3">
+                    <div class="text-sm font-mono text-white text-center">
+                      ${renderLatex(`x_{1,2} = \\frac{${-b} \\pm ${simplifyRadical(D).latex}}{${twoA}}`, true)}
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                      <div class="p-3 bg-slate-900/60 rounded-lg text-center font-mono">
+                        <span class="text-slate-400 text-[11px] block mb-1">Aproksimasi x₁:</span>
+                        <span class="text-brand-300 font-bold">${((-b + Math.sqrt(D)) / twoA).toFixed(4)}</span>
+                      </div>
+                      <div class="p-3 bg-slate-900/60 rounded-lg text-center font-mono">
+                        <span class="text-slate-400 text-[11px] block mb-1">Aproksimasi x₂:</span>
+                        <span class="text-emerald-300 font-bold">${((-b - Math.sqrt(D)) / twoA).toFixed(4)}</span>
+                      </div>
+                    </div>
+                  </div>
+                `}
+              </div>
+            ` : D === 0 ? `
+              <div class="space-y-3 text-xs text-slate-300">
+                <p>Karena <span class="font-mono text-amber-400">D = 0</span>, maka <span class="font-mono">√D = 0</span>. Persamaan memiliki satu akar kembar real:</p>
+                <div class="p-4 bg-slate-800/60 rounded-xl border border-slate-700/50 text-center font-mono space-y-2">
+                  ${renderLatex(`x_1 = x_2 = \\frac{${-b} \\pm 0}{${twoA}} = \\frac{${-b}}{${twoA}}`, true)}
+                  <div class="text-lg font-bold text-white pt-2">
+                    ${renderLatex(`x = ${simplifyFraction(-b, twoA).latex}`)}
+                  </div>
+                </div>
+              </div>
+            ` : `
+              <div class="space-y-3 text-xs text-slate-300">
+                <p>Karena <span class="font-mono text-rose-400">D = ${D} &lt; 0</span>, akar dari bilangan negatif melibatkan satuan imajiner <span class="font-mono text-white">i = √(-1)</span>:</p>
+                <div class="p-4 bg-slate-800/60 rounded-xl border border-slate-700/50 text-center font-mono space-y-2">
+                  ${renderLatex(`\\sqrt{${D}} = \\sqrt{-1 \\cdot ${Math.abs(D)}} = i\\sqrt{${Math.abs(D)}} = ${simplifyRadical(Math.abs(D)).latex}i`, true)}
+                  <div class="pt-2 text-sm text-brand-300">
+                    ${renderLatex(`x_{1,2} = \\frac{${-b} \\pm ${simplifyRadical(Math.abs(D)).latex}i}{${twoA}}`, true)}
+                  </div>
+                  <div class="text-[11px] text-slate-400 pt-1">
+                    Persamaan memiliki dua akar kompleks yang saling sekawan (konjugat).
+                  </div>
+                </div>
+              </div>
+            `}
+
+            <!-- Himpunan Penyelesaian (HP) -->
+            <div class="mt-4 p-3 bg-emerald-950/40 rounded-xl border border-emerald-700/40 flex items-center justify-between">
+              <span class="text-xs font-semibold text-emerald-300 uppercase tracking-wider">Kesimpulan Akhir Himpunan Penyelesaian:</span>
+              <span class="text-sm font-bold text-white font-mono">
+                ${D >= 0 && Math.round(Math.sqrt(D)) ** 2 === D 
+                  ? renderLatex(`HP = \\left\\{ ${simplifyFraction(-b + Math.round(Math.sqrt(D)), twoA).latex}, \\, ${simplifyFraction(-b - Math.round(Math.sqrt(D)), twoA).latex} \\right\\}`)
+                  : D === 0
+                  ? renderLatex(`HP = \\left\\{ ${simplifyFraction(-b, twoA).latex} \\right\\}`)
+                  : renderLatex(`HP = \\emptyset \\; (\\text{dalam } \\mathbb{R})`)
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- PRESETS & RANDOM EQUATION GENERATOR --- */
+    function applyPreset(a, b, c) {
+      document.getElementById('input-a').value = a;
+      document.getElementById('input-b').value = b;
+      document.getElementById('input-c').value = c;
+      solveCurrentEquation();
+    }
+
+    function randomizeSolverEquation() {
+      // Generate clean interesting educational coefficients
+      const presets = [
+        [1, -5, 6],
+        [1, -7, 12],
+        [1, -1, -6],
+        [1, 2, -15],
+        [2, 5, -12],
+        [2, 7, 3],
+        [3, -10, 8],
+        [1, -6, 9], // twin roots
+        [4, -12, 9], // twin roots
+        [1, -4, 1], // irrational
+        [1, -6, 2], // irrational
+        [1, -2, 5]  // complex
+      ];
+      const randomPick = presets[Math.floor(Math.random() * presets.length)];
+      applyPreset(randomPick[0], randomPick[1], randomPick[2]);
+    }
+
+    /* ========================================== */
+    /* INTERACTIVE TRAINER & QUIZ MODULE          */
+    /* ========================================== */
+    function switchAppMode(mode) {
+      state.mode = mode;
+      const solverSection = document.getElementById('section-solver');
+      const trainerSection = document.getElementById('section-trainer');
+      const solverNavBtn = document.getElementById('nav-solver-btn');
+      const trainerNavBtn = document.getElementById('nav-trainer-btn');
+
+      if (mode === 'solver') {
+        solverSection.classList.remove('hidden');
+        trainerSection.classList.add('hidden');
+        solverNavBtn.className = 'px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 bg-brand-600 text-white shadow-sm flex items-center gap-2';
+        trainerNavBtn.className = 'px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-slate-200 flex items-center gap-2';
+      } else {
+        solverSection.classList.add('hidden');
+        trainerSection.classList.remove('hidden');
+        trainerNavBtn.className = 'px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 bg-brand-600 text-white shadow-sm flex items-center gap-2';
+        solverNavBtn.className = 'px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-slate-200 flex items-center gap-2';
+
+        // Stop narration if running
+        stopSpeechNarration();
+
+        // If no active question, generate one
+        if (!state.quiz.currentQuestion) {
+          generateNextQuizQuestion();
+        }
+      }
+    }
+
+    function setQuizLevel(level) {
+      state.quiz.level = level;
+      for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById(`btn-lvl-${i}`);
+        if (i === level) {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold transition bg-brand-600 text-white shadow-sm flex items-center gap-1.5';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold transition bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 flex items-center gap-1.5';
+        }
+      }
+      generateNextQuizQuestion();
+    }
+
+    function generateNextQuizQuestion() {
+      const level = state.quiz.level;
+      let questionObj = null;
+
+      if (level === 1) {
+        // Level 1: Faktorisasi Mudah, a=1, akar bulat sederhana
+        const r1Candidates = [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6];
+        const root1 = r1Candidates[Math.floor(Math.random() * r1Candidates.length)];
+        let root2 = r1Candidates[Math.floor(Math.random() * r1Candidates.length)];
+        while (root2 === root1) {
+          root2 = r1Candidates[Math.floor(Math.random() * r1Candidates.length)];
+        }
+        const a = 1;
+        const b = -(root1 + root2);
+        const c = root1 * root2;
+
+        questionObj = {
+          type: 'roots',
+          level: 1,
+          a, b, c,
+          title: 'Tentukan Himpunan Penyelesaian (Akar-Akar)',
+          promptLatex: formatQuadraticLatex(a, b, c),
+          targetRoots: [root1, root2],
+          solutionLatex: `x_1 = ${Math.min(root1, root2)}, \\; x_2 = ${Math.max(root1, root2)}`,
+          explanation: `Persamaan dapat difaktorkan menjadi (x - (${root1}))(x - (${root2})) = 0. Menghasilkan akar-akar x = ${root1} dan x = ${root2}.`
+        };
+      } else if (level === 2) {
+        // Level 2: a > 1 atau Akar Pecahan
+        const aCandidates = [2, 3, 4, 5];
+        const a = aCandidates[Math.floor(Math.random() * aCandidates.length)];
+        
+        // Pilih akar 1 (bisa pecahan misal p/a) dan akar 2 (bulat)
+        const possibleNumerators = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5];
+        let p = possibleNumerators[Math.floor(Math.random() * possibleNumerators.length)];
+        while (p % a === 0) {
+          p = possibleNumerators[Math.floor(Math.random() * possibleNumerators.length)];
+        }
+        const root1Val = p / a; // pecahan
+        const root2Val = [-4, -3, -2, -1, 1, 2, 3, 4][Math.floor(Math.random() * 8)]; // bulat
+
+        // Persamaan: a * (x - p/a) * (x - root2Val) = 0 => (a*x - p)(x - root2Val) = a*x^2 - (a*root2Val + p)x + p*root2Val
+        const b = -(a * root2Val + p);
+        const c = p * root2Val;
+
+        const frac1 = simplifyFraction(p, a);
+        const frac2 = simplifyFraction(root2Val, 1);
+
+        questionObj = {
+          type: 'roots',
+          level: 2,
+          a, b, c,
+          title: 'Tentukan Akar-Akar (Dukungan Pecahan atau Desimal)',
+          promptLatex: formatQuadraticLatex(a, b, c),
+          targetRoots: [root1Val, root2Val],
+          solutionLatex: `x_1 = ${frac1.latex}, \\; x_2 = ${frac2.latex}`,
+          explanation: `Bentuk faktorisasi aljabar adalah (${a}x ${-p >= 0 ? `+ ${-p}` : `- ${p}`})(x ${-root2Val >= 0 ? `+ ${-root2Val}` : `- ${Math.abs(root2Val)}`}) = 0, sehingga diperoleh x_1 = ${frac1.text} dan x_2 = ${frac2.text}.`
+        };
+      } else {
+        // Level 3: Soal Tantangan Diskriminan & Teorema Vieta
+        const subType = Math.floor(Math.random() * 3); // 0: Sum of roots, 1: Product of roots, 2: Discriminant value
+        const a = [1, 2, 3, 4][Math.floor(Math.random() * 4)];
+        const b = [-8, -6, -4, 4, 6, 8][Math.floor(Math.random() * 6)];
+        const c = [-6, -4, -2, 2, 3, 5][Math.floor(Math.random() * 6)];
+
+        if (subType === 0) {
+          // Teorema Vieta: x1 + x2 = -b / a
+          const targetVal = -b / a;
+          const targetFrac = simplifyFraction(-b, a);
+          questionObj = {
+            type: 'single_val',
+            level: 3,
+            a, b, c,
+            title: 'Teorema Vieta: Jumlah Akar-Akar (x₁ + x₂)',
+            questionPrompt: `Diketahui persamaan kuadrat memiliki akar-akar $x_1$ dan $x_2$. Berapakah nilai dari $x_1 + x_2$?`,
+            promptLatex: formatQuadraticLatex(a, b, c),
+            targetVal: targetVal,
+            solutionLatex: `x_1 + x_2 = -\\frac{b}{a} = -\\frac{${b}}{${a}} = ${targetFrac.latex}`,
+            explanation: `Berdasarkan Teorema Vieta, jumlah akar-akar persamaan kuadrat adalah x_1 + x_2 = -b/a = -(${b})/${a} = ${targetFrac.text}.`
+          };
+        } else if (subType === 1) {
+          // Teorema Vieta: x1 * x2 = c / a
+          const targetVal = c / a;
+          const targetFrac = simplifyFraction(c, a);
+          questionObj = {
+            type: 'single_val',
+            level: 3,
+            a, b, c,
+            title: 'Teorema Vieta: Hasil Kali Akar-Akar (x₁ · x₂)',
+            questionPrompt: `Diketahui persamaan kuadrat memiliki akar-akar $x_1$ dan $x_2$. Berapakah nilai dari $x_1 \\cdot x_2$?`,
+            promptLatex: formatQuadraticLatex(a, b, c),
+            targetVal: targetVal,
+            solutionLatex: `x_1 \\cdot x_2 = \\frac{c}{a} = \\frac{${c}}{${a}} = ${targetFrac.latex}`,
+            explanation: `Berdasarkan Teorema Vieta, hasil kali akar-akar adalah x_1 · x_2 = c/a = ${c}/${a} = ${targetFrac.text}.`
+          };
+        } else {
+          // Diskriminan: D = b^2 - 4ac
+          const D = (b * b) - (4 * a * c);
+          questionObj = {
+            type: 'single_val',
+            level: 3,
+            a, b, c,
+            title: 'Karakteristik Diskriminan (D)',
+            questionPrompt: `Hitunglah nilai diskriminan $D = b^2 - 4ac$ dari persamaan kuadrat berikut:`,
+            promptLatex: formatQuadraticLatex(a, b, c),
+            targetVal: D,
+            solutionLatex: `D = (${b})^2 - 4(${a})(${c}) = ${b * b} - (${4 * a * c}) = ${D}`,
+            explanation: `Rumus diskriminan adalah D = b^2 - 4ac = (${b})^2 - 4(${a})(${c}) = ${D}.`
+          };
+        }
+      }
+
+      state.quiz.currentQuestion = questionObj;
+      renderQuizCard(questionObj);
+    }
+
+    function renderQuizCard(q) {
+      const box = document.getElementById('trainer-card-box');
+
+      let inputsHtml = '';
+      if (q.type === 'roots') {
+        inputsHtml = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="quiz-input-r1" class="block text-xs font-semibold text-slate-300 mb-1">Akar x₁ :</label>
+              <input type="text" id="quiz-input-r1" placeholder="Contoh: 3 atau 1/2" autocomplete="off"
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-mono text-base focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+            </div>
+            <div>
+              <label for="quiz-input-r2" class="block text-xs font-semibold text-slate-300 mb-1">Akar x₂ :</label>
+              <input type="text" id="quiz-input-r2" placeholder="Contoh: -2 atau 0.5" autocomplete="off"
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-mono text-base focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-2">💡 Tips: Urutan x₁ dan x₂ bebas tertukar. Mendukung pecahan biasa (misal <span class="font-mono text-slate-300">3/2</span>) atau desimal (<span class="font-mono text-slate-300">1.5</span>).</p>
+        `;
+      } else {
+        inputsHtml = `
+          <div>
+            <label for="quiz-input-single" class="block text-xs font-semibold text-slate-300 mb-1">Jawaban Anda (Angka atau Pecahan):</label>
+            <input type="text" id="quiz-input-single" placeholder="Contoh: 4 atau -3/2 atau 25" autocomplete="off"
+              class="w-full sm:w-1/2 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-mono text-base focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+          </div>
+        `;
+      }
+
+      box.innerHTML = `
+        <div id="quiz-card-content" class="space-y-6">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              ${q.title}
+            </span>
+            <span class="text-xs text-slate-400 font-mono">Bobot: ${q.level * 10} Poin</span>
+          </div>
+
+          ${q.questionPrompt ? `<p class="text-sm text-slate-300">${q.questionPrompt.replace(/\$([^\$]+)\$/g, (m, c) => renderLatex(c))}</p>` : ''}
+
+          <!-- Persamaan Kuadrat Display -->
+          <div class="p-4 bg-slate-900/80 rounded-2xl border border-slate-800 text-center">
+            <div class="text-2xl sm:text-3xl font-semibold text-white font-mono">
+              ${renderLatex(q.promptLatex, true)}
+            </div>
+          </div>
+
+          <!-- Form Input Jawaban -->
+          <form id="quiz-form" onsubmit="event.preventDefault(); submitQuizAnswer();" class="space-y-4">
+            ${inputsHtml}
+
+            <!-- Feedback Alert Area (Hidden initially) -->
+            <div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-xs font-medium"></div>
+
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <button type="submit" id="btn-submit-quiz" class="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/30 transition flex items-center gap-2">
+                <span>Periksa Jawaban</span>
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              </button>
+              <button type="button" onclick="showQuizSolution(true)" class="px-4 py-2.5 bg-slate-700/60 hover:bg-slate-700 text-slate-300 rounded-xl font-medium transition text-xs">
+                💡 Bantuan / Lihat Pembahasan
+              </button>
+            </div>
+          </form>
+
+          <!-- Area Pembahasan Solusi Lengkap -->
+          <div id="quiz-solution-box" class="hidden bg-slate-900/90 rounded-2xl border border-slate-700/80 p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                <span>📖 Pembahasan Solusi Runtut</span>
+              </h4>
+              <button onclick="document.getElementById('quiz-solution-box').classList.add('hidden')" class="text-slate-400 hover:text-white text-xs">Tutup</button>
+            </div>
+            <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-sm font-mono text-emerald-300 text-center">
+              ${renderLatex(q.solutionLatex, true)}
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              ${q.explanation}
+            </p>
+          </div>
+        </div>
+      `;
+
+      // Auto focus first input
+      setTimeout(() => {
+        const inp = document.getElementById('quiz-input-r1') || document.getElementById('quiz-input-single');
+        if (inp) inp.focus();
+      }, 50);
+    }
+
+    function playAudioFeedback(isCorrect) {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+        if (isCorrect) {
+          // Cheerful chime: C5 then G5
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(783.99, now + 0.12); // G5
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else {
+          // Low gentle thud
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.setValueAtTime(130, now + 0.1);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        }
+      } catch (e) {
+        // Audio synthesis fallback
+      }
+    }
+
+    function submitQuizAnswer() {
+      const q = state.quiz.currentQuestion;
+      if (!q) return;
+
+      let isCorrect = false;
+      let userAnsDisplay = '';
+
+      if (q.type === 'roots') {
+        const val1 = parseUserMathInput(document.getElementById('quiz-input-r1').value);
+        const val2 = parseUserMathInput(document.getElementById('quiz-input-r2').value);
+
+        if (val1 === null || val2 === null) {
+          alert('Mohon isi kedua nilai akar x₁ dan x₂ dengan benar.');
+          return;
+        }
+
+        userAnsDisplay = `x₁ = ${document.getElementById('quiz-input-r1').value.trim()}, x₂ = ${document.getElementById('quiz-input-r2').value.trim()}`;
+
+        // Periksa apakah cocok (urutan bebas)
+        const t1 = q.targetRoots[0];
+        const t2 = q.targetRoots[1];
+        const eps = 0.01;
+
+        const matchDirect = Math.abs(val1 - t1) < eps && Math.abs(val2 - t2) < eps;
+        const matchSwapped = Math.abs(val1 - t2) < eps && Math.abs(val2 - t1) < eps;
+
+        isCorrect = matchDirect || matchSwapped;
+      } else {
+        const singleVal = parseUserMathInput(document.getElementById('quiz-input-single').value);
+        if (singleVal === null) {
+          alert('Mohon masukkan jawaban berupa angka atau pecahan.');
+          return;
+        }
+
+        userAnsDisplay = document.getElementById('quiz-input-single').value.trim();
+        const eps = 0.01;
+        isCorrect = Math.abs(singleVal - q.targetVal) < eps;
+      }
+
+      handleQuizResult(isCorrect, userAnsDisplay);
+    }
+
+    function handleQuizResult(isCorrect, userAnsDisplay) {
+      state.quiz.totalAttempted++;
+      const feedbackBox = document.getElementById('quiz-feedback-box');
+      const cardBox = document.getElementById('trainer-card-box');
+
+      playAudioFeedback(isCorrect);
+
+      if (isCorrect) {
+        state.quiz.totalCorrect++;
+        state.quiz.streak++;
+        const pointsWon = (state.quiz.level * 10) + (state.quiz.streak > 1 ? 5 : 0);
+        state.quiz.score += pointsWon;
+
+        feedbackBox.className = 'p-4 rounded-xl text-xs font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center justify-between';
+        feedbackBox.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🎉</span>
+            <span>Luar Biasa! Jawaban Anda Benar (+${pointsWon} Poin).</span>
+          </div>
+          <button type="button" onclick="generateNextQuizQuestion()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs transition">
+            Soal Berikutnya ➜
+          </button>
+        `;
+        feedbackBox.classList.remove('hidden');
+
+        // Add history record
+        recordQuizHistory(true, userAnsDisplay);
+      } else {
+        state.quiz.streak = 0;
+        cardBox.classList.add('animate-shake');
+        setTimeout(() => cardBox.classList.remove('animate-shake'), 400);
+
+        feedbackBox.className = 'p-4 rounded-xl text-xs font-semibold bg-rose-500/15 border border-rose-500/30 text-rose-300 flex items-center justify-between';
+        feedbackBox.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="text-lg">❌</span>
+            <span>Jawaban belum tepat. Coba periksa kembali perhitungan Anda atau buka pembahasan!</span>
+          </div>
+          <button type="button" onclick="showQuizSolution(false)" class="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs transition">
+            Lihat Solusi
+          </button>
+        `;
+        feedbackBox.classList.remove('hidden');
+
+        // Add history record
+        recordQuizHistory(false, userAnsDisplay);
+      }
+
+      updateTrainerScoreboard();
+    }
+
+    function showQuizSolution(isSurrender = false) {
+      const solutionBox = document.getElementById('quiz-solution-box');
+      solutionBox.classList.remove('hidden');
+
+      if (isSurrender) {
+        state.quiz.streak = 0;
+        updateTrainerScoreboard();
+      }
+    }
+
+    function recordQuizHistory(isCorrect, userAns) {
+      const q = state.quiz.currentQuestion;
+      const historyItem = {
+        level: q.level,
+        eq: q.promptLatex,
+        userAns: userAns,
+        keyAns: q.solutionLatex,
+        isCorrect: isCorrect,
+        timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+      };
+      state.quiz.history.unshift(historyItem);
+      renderQuizHistoryTable();
+    }
+
+    function renderQuizHistoryTable() {
+      const tbody = document.getElementById('quiz-history-body');
+      const countBadge = document.getElementById('history-count-badge');
+      countBadge.textContent = `${state.quiz.history.length} Soal`;
+
+      if (state.quiz.history.length === 0) {
+        tbody.innerHTML = `
+          <tr id="quiz-history-empty">
+            <td colspan="6" class="px-3 py-6 text-center text-slate-500 italic">
+              Belum ada soal yang dijawab pada sesi ini. Ayo mulai berlatih!
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let rows = '';
+      state.quiz.history.forEach((item, idx) => {
+        rows += `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="px-3 py-2.5 font-mono text-slate-400">${idx + 1}</td>
+            <td class="px-3 py-2.5 font-semibold text-slate-300">Level ${item.level}</td>
+            <td class="px-3 py-2.5 font-mono">${renderLatex(item.eq)}</td>
+            <td class="px-3 py-2.5 font-mono text-slate-300">${item.userAns}</td>
+            <td class="px-3 py-2.5 font-mono text-emerald-400">${renderLatex(item.keyAns)}</td>
+            <td class="px-3 py-2.5 text-center">
+              ${item.isCorrect 
+                ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Benar ✔</span>' 
+                : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">Salah ✕</span>'}
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = rows;
+    }
+
+    function clearQuizHistory() {
+      state.quiz.history = [];
+      renderQuizHistoryTable();
+    }
+
+    function updateTrainerScoreboard() {
+      document.getElementById('trainer-score').textContent = state.quiz.score;
+      document.getElementById('trainer-streak').textContent = state.quiz.streak;
+      const acc = state.quiz.totalAttempted > 0 
+        ? Math.round((state.quiz.totalCorrect / state.quiz.totalAttempted) * 100) 
+        : 0;
+      document.getElementById('trainer-accuracy').textContent = `${acc}%`;
+    }
+
+    /* --- INITIALIZATION ON LOAD --- */
+    window.addEventListener('DOMContentLoaded', () => {
+      // Initialize KaTeX and first solver render
+      solveCurrentEquation();
+    });
+  </script>
+</body>
+</html>
