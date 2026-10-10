@@ -2,7 +2,7 @@
 
 Media Pembelajaran Interaktif Matematika SMA Fase E (Kurikulum Merdeka) untuk menguasai konsep dan penyelesaian **Persamaan Kuadrat** $ax^2 + bx + c = 0$ secara komprehensif, runtut, dan menyenangkan.
 
-🌐 **Live Demo (GitHub Pages):** [https://fakhri24.github.io/supermath-persamaan-kuadrat/](https://fakhri24.github.io/supermath-persamaan-kuadrat/)
+🌐 **Live Demo (GitHub Pages):** [https://fakhri24.github.io/solv-kuadrat-stepbystep/](https://fakhri24.github.io/solv-kuadrat-stepbystep/)
 
 ---
 
