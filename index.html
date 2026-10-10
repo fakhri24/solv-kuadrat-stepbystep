@@ -1009,33 +1009,49 @@
       const absP = Math.abs(P);
       const checkedDivisors = new Set();
 
-      for (let i = 1; i <= Math.min(absP, 30); i++) {
-        if (absP % i === 0) {
-          const div1 = i;
-          const div2 = P / i;
-          // check positive and negative variations
-          const pairs = [
-            [div1, div2],
-            [-div1, -div2]
-          ];
-          for (let [candP, candQ] of pairs) {
-            const key = Math.min(candP, candQ) + ',' + Math.max(candP, candQ);
-            if (!checkedDivisors.has(key)) {
-              checkedDivisors.add(key);
-              const sum = candP + candQ;
-              const isMatch = (sum === S && (candP * candQ === P));
-              factorRowsHtml += `
-                <tr class="${isMatch ? 'bg-emerald-500/10 font-semibold text-emerald-300' : 'hover:bg-slate-800/40'}">
-                  <td class="px-3 py-1.5 font-mono">${candP}</td>
-                  <td class="px-3 py-1.5 font-mono">${candQ}</td>
-                  <td class="px-3 py-1.5 font-mono">${candP} × ${candQ} = ${P}</td>
-                  <td class="px-3 py-1.5 font-mono">${candP} + (${candQ}) = ${sum}</td>
-                  <td class="px-3 py-1.5 text-center">
-                    ${isMatch ? '<span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Cocok! ✔</span>' : '<span class="text-slate-600">✕</span>'}
-                  </td>
-                </tr>
-              `;
-            }
+      if (P === 0) {
+        factorRowsHtml = `
+          <tr class="bg-emerald-500/10 font-semibold text-emerald-300">
+            <td class="px-3 py-1.5 font-mono">${p}</td>
+            <td class="px-3 py-1.5 font-mono">${q}</td>
+            <td class="px-3 py-1.5 font-mono">${p} × ${q} = 0</td>
+            <td class="px-3 py-1.5 font-mono">${p} + (${q}) = ${S}</td>
+            <td class="px-3 py-1.5 text-center">
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Cocok! ✔</span>
+            </td>
+          </tr>
+        `;
+      } else {
+        const factorPairs = [];
+        for (let i = 1; i * i <= absP; i++) {
+          if (absP % i === 0) {
+            const d1 = i;
+            const d2 = P / i;
+            factorPairs.push([d1, d2]);
+            factorPairs.push([-d1, -d2]);
+          }
+        }
+        if (!factorPairs.some(pair => (pair[0] === p && pair[1] === q) || (pair[0] === q && pair[1] === p))) {
+          factorPairs.push([p, q]);
+        }
+
+        for (let [candP, candQ] of factorPairs) {
+          const key = Math.min(candP, candQ) + ',' + Math.max(candP, candQ);
+          if (!checkedDivisors.has(key)) {
+            checkedDivisors.add(key);
+            const sum = candP + candQ;
+            const isMatch = (sum === S && (candP * candQ === P));
+            factorRowsHtml += `
+              <tr class="${isMatch ? 'bg-emerald-500/10 font-semibold text-emerald-300' : 'hover:bg-slate-800/40'}">
+                <td class="px-3 py-1.5 font-mono">${candP}</td>
+                <td class="px-3 py-1.5 font-mono">${candQ}</td>
+                <td class="px-3 py-1.5 font-mono">${candP} × ${candQ} = ${P}</td>
+                <td class="px-3 py-1.5 font-mono">${candP} + (${candQ}) = ${sum}</td>
+                <td class="px-3 py-1.5 text-center">
+                  ${isMatch ? '<span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Cocok! ✔</span>' : '<span class="text-slate-600">✕</span>'}
+                </td>
+              </tr>
+            `;
           }
         }
       }
@@ -1990,8 +2006,19 @@
 
     /* --- INITIALIZATION ON LOAD --- */
     window.addEventListener('DOMContentLoaded', () => {
-      // Initialize KaTeX and first solver render
-      solveCurrentEquation();
+      // Check if KaTeX is already loaded or poll briefly for async CDN
+      if (typeof katex !== 'undefined') {
+        solveCurrentEquation();
+      } else {
+        let attempts = 0;
+        const interval = setInterval(() => {
+          attempts++;
+          if (typeof katex !== 'undefined' || attempts > 20) {
+            clearInterval(interval);
+            solveCurrentEquation();
+          }
+        }, 80);
+      }
     });
   </script>
 </body>
